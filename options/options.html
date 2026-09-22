@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NowJump settings</title>
+<style>
+  :root { --text:#1b1b1b; --text2:#5f5e5a; --muted:#8a8985; --border:#d9d7d0; --raised:#f5f5f4; --bg:#ffffff; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) { :root { --text:#e8e6e1; --text2:#a5a39c; --muted:#77766f; --border:#3a3b40; --raised:#2a2b2f; --bg:#1f2023; } }
+  body { margin:0; background:var(--bg); color:var(--text); font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 560px; margin: 0 auto; padding: 48px 24px 64px; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .lede { color: var(--text2); margin: 0 0 32px; }
+  kbd { font: 12px/1 var(--mono); background: var(--raised); border: 1px solid var(--border); border-radius: 5px; padding: 3px 7px; }
+  section { border-top: 1px solid var(--border); padding: 20px 0; }
+  h2 { font-size: 15px; font-weight: 500; margin: 0 0 12px; }
+  .field { display: grid; grid-template-columns: 1fr 200px; gap: 12px; align-items: center; padding: 8px 0; }
+  .desc { color: var(--text2); font-size: 13px; }
+  label { display: block; }
+  input[type=text], select { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+  input[type=checkbox] { width: 16px; height: 16px; justify-self: end; }
+  button { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button:hover { background: var(--raised); }
+  button.danger { color: #a32d2d; }
+  .status { color: var(--muted); font-size: 13px; min-height: 20px; margin-top: 8px; }
+  .try { background: var(--raised); border-radius: 8px; padding: 14px 16px; margin: 0 0 8px; }
+  code { font: 12px/1 var(--mono); }
+  .domains { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+  .domains li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+  .domains li code { font-size: 13px; }
+  .domains .state { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .domains button { padding: 3px 9px; font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>NowJump</h1>
+  <p class="lede">A command palette for ServiceNow. Press <kbd id="shortcut-display">Ctrl K</kbd> on any instance page.</p>
+
+  <div class="try">
+    Try it: open any instance, press the shortcut, type <code>ecc</code>, press Enter. Paste a sys_id to jump straight to its record. Type <code>&gt;</code> to see only actions for the record you have open.
+  </div>
+
+  <section>
+    <h2>Shortcut</h2>
+    <div class="field">
+      <label for="shortcutKey">Key<div class="desc">A single letter. Used with the modifier below.</div></label>
+      <input type="text" id="shortcutKey" maxlength="1" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="shortcutMod">Modifier</label>
+      <select id="shortcutMod">
+        <option value="ctrl-or-meta">Ctrl or Cmd</option>
+        <option value="ctrl">Ctrl only</option>
+        <option value="meta">Cmd only</option>
+        <option value="alt">Alt</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="allowInFields">Open while typing in a field<div class="desc">Off by default so the shortcut never steals a keystroke from a work note.</div></label>
+      <input type="checkbox" id="allowInFields">
+    </div>
+  </section>
+
+  <section>
+    <h2>Navigation</h2>
+    <div class="field">
+      <label for="openInNewTab">Open results in a new tab<div class="desc">Shift+Enter always opens in a new tab regardless.</div></label>
+      <input type="checkbox" id="openInNewTab">
+    </div>
+    <div class="field">
+      <label for="otherUiNewTab">"Open in other UI" uses a new tab<div class="desc">Keeps the record you were on.</div></label>
+      <input type="checkbox" id="otherUiNewTab">
+    </div>
+    <div class="field">
+      <label for="workspacePath">Workspace path<div class="desc">Used when opening a classic record in Workspace. <code>sow</code> for Service Operations Workspace, <code>cwf/agent</code> for CSM Configurable Workspace.</div></label>
+      <input type="text" id="workspacePath" autocomplete="off">
+    </div>
+  </section>
+
+  <section>
+    <h2>Instance domains</h2>
+    <p class="desc" style="margin:0 0 12px">NowJump runs on <code>*.service-now.com</code> by default. If your instance uses its own domain, add it here. Chrome will ask you to allow the extension on that site; nothing is enabled until you accept.</p>
+    <div class="field" style="grid-template-columns: 1fr auto">
+      <input type="text" id="domainInput" placeholder="itsm.example.com  or  *.example.com" autocomplete="off" spellcheck="false">
+      <button id="domainAdd">Add domain</button>
+    </div>
+    <ul id="domainList" class="domains"></ul>
+    <p class="desc" id="domainHelp" style="margin:8px 0 0"></p>
+  </section>
+
+  <section>
+    <h2>Stored data</h2>
+    <p class="desc" style="margin:0 0 12px">NowJump keeps recents per instance in this browser only: table names, sys_ids, labels and timestamps. Never record content, never synced, never sent anywhere.</p>
+    <button id="clear" class="danger">Clear all stored data</button>
+  </section>
+
+  <div class="status" id="status"></div>
+</main>
+<script src="../src/lib/store.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "manifest_version": 3,
+  "name": "NowJump",
+  "version": "0.3.0",
+  "description": "Keyboard command palette for ServiceNow: jump to tables, records and sys_ids, open in the other UI, see your update set.",
+  "author": "Joao Gomes",
+  "minimum_chrome_version": "111",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.service-now.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "NowJump settings"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.service-now.com/*"
+      ],
+      "js": [
+        "src/bridge.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.service-now.com/*"
+      ],
+      "js": [
+        "src/brand.js",
+        "src/lib/context.js",
+        "src/lib/match.js",
+        "src/lib/store.js",
+        "src/lib/api.js",
+        "src/commands/curated.js",
+        "src/commands/catalog.js",
+        "src/commands/chain.js",
+        "src/commands/registry.js",
+        "src/palette.js",
+        "src/content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
