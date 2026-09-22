@@ -10,7 +10,7 @@ Zero instance-side configuration. No update sets, no plugins, no telemetry. Work
 
 ## Install (unpacked, for personal use)
 
-1. Download and unzip `nowjump-0.1.0.zip`.
+1. Download and unzip `nowjump-0.3.0.zip`.
 2. Chrome > `chrome://extensions` > enable Developer mode (top right).
 3. Load unpacked > select the unzipped `nowjump` folder.
 4. The settings page opens once. It shows the shortcut. That is the whole onboarding.
@@ -70,4 +70,4 @@ node test/palette.test.js
 - Update set switching uses the header picker endpoint first and falls back to writing `sys_user_preference`. The picker endpoint is the one the platform's own header uses, but it is not a documented public API. If it changes, the fallback path still works.
 - sys_id resolution only tries tables in `SYS_ID_CANDIDATES` plus your recents. Add tables there if your work lives elsewhere.
 - Not validated against customer instances. See `docs/REMAINING-WORK.md` and `docs/STORE-LISTING.md` before publishing.
-- Privacy policy: `PRIVACY.md`.
+- Privacy policy: `PRIVACY_POLICY.md`.
